@@ -173,9 +173,6 @@ public class CordovaActivity extends Activity {
     protected void createViews() {
         //Why are we setting a constant as the ID? This should be investigated
         appView.getView().setId(100);
-        appView.getView().setLayoutParams(new FrameLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.MATCH_PARENT));
 
         setContentView(appView.getView());
 

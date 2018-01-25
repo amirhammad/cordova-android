@@ -139,4 +139,7 @@ public interface CordovaWebView {
     Context getContext();
     void loadUrl(String url);
     Object postMessage(String id, Object data);
+
+    void addSecondaryView(View newView);
+    void removeSecondaryView();
 }

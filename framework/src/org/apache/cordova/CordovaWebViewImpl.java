@@ -27,6 +27,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebChromeClient;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 
 import org.apache.cordova.engine.SystemWebViewEngine;
 import org.json.JSONException;
@@ -71,6 +72,8 @@ public class CordovaWebViewImpl implements CordovaWebView {
 
     private Set<Integer> boundKeyCodes = new HashSet<Integer>();
 
+    private ViewGroup parentView = null;
+
     public static CordovaWebViewEngine createEngine(Context context, CordovaPreferences preferences) {
         String className = preferences.getString("webview", SystemWebViewEngine.class.getCanonicalName());
         try {
@@ -84,6 +87,9 @@ public class CordovaWebViewImpl implements CordovaWebView {
 
     public CordovaWebViewImpl(CordovaWebViewEngine cordovaWebViewEngine) {
         this.engine = cordovaWebViewEngine;
+        if (parentView == null) {
+            parentView = new LinearLayout(getContext());
+        }
     }
 
     // Convenience method for when creating programmatically (not from Config.xml).
@@ -110,6 +116,7 @@ public class CordovaWebViewImpl implements CordovaWebView {
         engine.init(this, cordova, engineClient, resourceApi, pluginManager, nativeToJsMessageQueue);
         // This isn't enforced by the compiler, so assert here.
         assert engine.getView() instanceof CordovaWebViewEngine.EngineView;
+        prepareLayout();
 
         pluginManager.addService(CoreAndroid.PLUGIN_NAME, "org.apache.cordova.CoreAndroid");
         pluginManager.init();
@@ -327,10 +334,36 @@ public class CordovaWebViewImpl implements CordovaWebView {
     public CordovaWebViewEngine getEngine() {
         return engine;
     }
+
+    private void prepareLayout() {
+        ((LinearLayout) parentView).setOrientation(LinearLayout.VERTICAL);
+        parentView.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        engine.getView().setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT, 1.0F));
+        parentView.addView(engine.getView());
+        parentView.bringToFront();
+        parentView.requestLayout();
+        parentView.requestFocus();
+    }
+
     @Override
     public View getView() {
-        return engine.getView();
+        return parentView;
     }
+
+    @Override
+    public void addSecondaryView(View newView) {
+        if (parentView.getChildCount() < 2) {
+            parentView.addView(newView);
+        }
+    }
+
+    @Override
+    public void removeSecondaryView() {
+        if (parentView.getChildCount() == 2) {
+            parentView.removeViewAt(1);
+        }
+    }
+
     @Override
     public Context getContext() {
         return engine.getView().getContext();
