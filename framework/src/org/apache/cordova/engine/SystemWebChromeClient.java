@@ -263,6 +263,7 @@ public class SystemWebChromeClient extends WebChromeClient {
     @Override
     public boolean onShowFileChooser(WebView webView, final ValueCallback<Uri[]> filePathsCallback, final WebChromeClient.FileChooserParams fileChooserParams) {
         Intent intent = fileChooserParams.createIntent();
+        intent.setType("image/*");
         try {
             parentEngine.cordova.startActivityForResult(new CordovaPlugin() {
                 @Override
