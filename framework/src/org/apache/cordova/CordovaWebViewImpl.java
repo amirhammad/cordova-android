@@ -351,6 +351,11 @@ public class CordovaWebViewImpl implements CordovaWebView {
     }
 
     @Override
+    public View getWebView() {
+        return engine.getView();
+    }
+
+    @Override
     public void addSecondaryView(View newView) {
         if (parentView.getChildCount() < 2) {
             parentView.addView(newView);

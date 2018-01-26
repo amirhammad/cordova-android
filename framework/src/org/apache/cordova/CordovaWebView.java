@@ -38,6 +38,7 @@ public interface CordovaWebView {
     boolean isInitialized();
 
     View getView();
+    View getWebView();
 
     void loadUrlIntoView(String url, boolean recreatePlugins);
 
